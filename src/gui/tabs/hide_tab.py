@@ -1,12 +1,14 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
-                           QLabel, QTextEdit, QComboBox, QFileDialog, QFrame)
+                           QLabel, QTextEdit, QComboBox, QFileDialog, QFrame, QMessageBox)
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 from ..widgets.audio_player import AudioPlayer
+from ..steganography.lsb import LSBAudio
 
 class HideTab(QWidget):
     def __init__(self):
         super().__init__()
+        self.lsb = LSBAudio()
         self.init_ui()
 
     def init_ui(self):
@@ -111,6 +113,7 @@ class HideTab(QWidget):
         buttons_layout.setSpacing(10)
         
         self.hide_btn = self.create_button("Hide Message")
+        self.hide_btn.clicked.connect(self.hide_message)
         self.hide_btn.setStyleSheet(self.hide_btn.styleSheet() + """
             QPushButton {
                 background-color: #007acc;
@@ -175,14 +178,38 @@ class HideTab(QWidget):
         """)
         return btn
 
+    def hide_message(self):
+        if not hasattr(self, 'audio_path') or not self.audio_path:
+            QMessageBox.warning(self, "Warning", "Please load an audio file first")
+            return
+            
+        message = self.message_text.toPlainText()
+        if not message:
+            QMessageBox.warning(self, "Warning", "Please enter a message")
+            return
+            
+        # Tạo output path
+        output_path = self.audio_path.rsplit('.', 1)[0] + '_stego.wav'
+        
+        # Thực hiện giấu tin
+        success, msg = self.lsb.hide_message(self.audio_path, message, output_path)
+        
+        if success:
+            QMessageBox.information(self, "Success", 
+                f"Message hidden successfully!\nSaved to: {output_path}")
+            self.save_btn.setEnabled(True)
+        else:
+            QMessageBox.critical(self, "Error", msg)
+
     def load_audio(self):
         file_name, _ = QFileDialog.getOpenFileName(
             self,
             "Open Audio File",
             "",
-            "WAV Files (*.wav);;All Files (*.*)"  # Ưu tiên file WAV
+            "WAV Files (*.wav)"
         )
         if file_name:
+            self.audio_path = file_name
             self.audio_path_label.setText(file_name)
             self.audio_path_label.setStyleSheet("""
                 QLabel {
