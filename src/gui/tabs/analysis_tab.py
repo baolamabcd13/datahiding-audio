@@ -1,15 +1,17 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
-                           QLabel, QFrame, QFileDialog, QGridLayout)
+                           QLabel, QFrame, QFileDialog, QGridLayout, QMessageBox)
 from PyQt6.QtCore import Qt
 import numpy as np
 import wave
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from scipy import signal
+from ...utils.audio_converter import AudioConverter
 
 class AnalysisTab(QWidget):
     def __init__(self):
         super().__init__()
+        self.converter = AudioConverter()
         self.init_ui()
         
     def init_ui(self):
@@ -158,38 +160,48 @@ class AnalysisTab(QWidget):
             self,
             "Open Original Audio File",
             "",
-            "WAV Files (*.wav)"
+            f"Audio Files ({AudioConverter.get_supported_formats()})"
         )
         if file_name:
-            self.orig_path = file_name
-            self.orig_path_label.setText(file_name)
-            self.orig_path_label.setStyleSheet("""
-                QLabel {
-                    color: #ffffff;
-                    padding: 8px;
-                    background: #2d2d2d;
-                    border-radius: 4px;
-                }
-            """)
+            # Chuyển đổi sang WAV nếu cần
+            success, wav_path = AudioConverter.convert_to_wav(file_name)
+            if success:
+                self.orig_path = wav_path
+                self.orig_path_label.setText(file_name)
+                self.orig_path_label.setStyleSheet("""
+                    QLabel {
+                        color: #ffffff;
+                        padding: 8px;
+                        background: #2d2d2d;
+                        border-radius: 4px;
+                    }
+                """)
+            else:
+                QMessageBox.warning(self, "Error", wav_path)
 
     def load_stego(self):
         file_name, _ = QFileDialog.getOpenFileName(
             self,
             "Open Stego Audio File",
             "",
-            "WAV Files (*.wav)"
+            f"Audio Files ({AudioConverter.get_supported_formats()})"
         )
         if file_name:
-            self.stego_path = file_name
-            self.stego_path_label.setText(file_name)
-            self.stego_path_label.setStyleSheet("""
-                QLabel {
-                    color: #ffffff;
-                    padding: 8px;
-                    background: #2d2d2d;
-                    border-radius: 4px;
-                }
-            """)
+            # Chuyển đổi sang WAV nếu cần
+            success, wav_path = AudioConverter.convert_to_wav(file_name)
+            if success:
+                self.stego_path = wav_path
+                self.stego_path_label.setText(file_name)
+                self.stego_path_label.setStyleSheet("""
+                    QLabel {
+                        color: #ffffff;
+                        padding: 8px;
+                        background: #2d2d2d;
+                        border-radius: 4px;
+                    }
+                """)
+            else:
+                QMessageBox.warning(self, "Error", wav_path)
 
     def analyze_files(self):
         if not hasattr(self, 'orig_path') or not hasattr(self, 'stego_path'):

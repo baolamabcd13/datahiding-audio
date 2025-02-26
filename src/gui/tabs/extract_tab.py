@@ -4,12 +4,14 @@ from PyQt6.QtCore import Qt
 from ..widgets.audio_player import AudioPlayer
 from ..steganography.lsb import LSBAudio
 from ..steganography.phase_coding import PhaseCoding
+from ...utils.audio_converter import AudioConverter
 
 class ExtractTab(QWidget):
     def __init__(self):
         super().__init__()
         self.lsb = LSBAudio()
         self.phase = PhaseCoding()
+        self.converter = AudioConverter()
         self.init_ui()
 
     def init_ui(self):
@@ -171,20 +173,25 @@ class ExtractTab(QWidget):
             self,
             "Open Stego Audio File",
             "",
-            "WAV Files (*.wav)"
+            f"Audio Files ({AudioConverter.get_supported_formats()})"
         )
         if file_name:
-            self.audio_path = file_name
-            self.audio_path_label.setText(file_name)
-            self.audio_path_label.setStyleSheet("""
-                QLabel {
-                    color: #ffffff;
-                    padding: 8px;
-                    background: #2d2d2d;
-                    border-radius: 4px;
-                }
-            """)
-            self.audio_player.load_audio(file_name)
+            # Chuyển đổi sang WAV nếu cần
+            success, wav_path = AudioConverter.convert_to_wav(file_name)
+            if success:
+                self.audio_path = wav_path
+                self.audio_path_label.setText(file_name)
+                self.audio_path_label.setStyleSheet("""
+                    QLabel {
+                        color: #ffffff;
+                        padding: 8px;
+                        background: #2d2d2d;
+                        border-radius: 4px;
+                    }
+                """)
+                self.audio_player.load_audio(wav_path)
+            else:
+                QMessageBox.warning(self, "Error", wav_path)
 
     def extract_message(self):
         if not hasattr(self, 'audio_path') or not self.audio_path:
