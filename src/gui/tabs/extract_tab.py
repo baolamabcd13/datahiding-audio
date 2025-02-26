@@ -1,13 +1,15 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
-                           QLabel, QTextEdit, QFileDialog, QFrame, QMessageBox)
+                           QLabel, QTextEdit, QFileDialog, QFrame, QMessageBox, QComboBox)
 from PyQt6.QtCore import Qt
 from ..widgets.audio_player import AudioPlayer
 from ..steganography.lsb import LSBAudio
+from ..steganography.phase_coding import PhaseCoding
 
 class ExtractTab(QWidget):
     def __init__(self):
         super().__init__()
         self.lsb = LSBAudio()
+        self.phase = PhaseCoding()
         self.init_ui()
 
     def init_ui(self):
@@ -45,6 +47,34 @@ class ExtractTab(QWidget):
         audio_layout.addWidget(self.audio_player)
         audio_section.layout().addLayout(audio_layout)
         layout.addWidget(audio_section)
+
+        # Steganography Method Section
+        method_section = self.create_section("Steganography Method")
+        self.method_combo = QComboBox()
+        self.method_combo.addItems(["LSB (Least Significant Bit)", "Phase Coding"])
+        self.method_combo.setStyleSheet("""
+            QComboBox {
+                background-color: #2d2d2d;
+                color: #ffffff;
+                border: none;
+                border-radius: 4px;
+                padding: 6px;
+            }
+            QComboBox::drop-down {
+                border: none;
+                width: 20px;
+            }
+            QComboBox::down-arrow {
+                image: url(resources/down-arrow.png);
+            }
+            QComboBox QAbstractItemView {
+                background-color: #2d2d2d;
+                color: #ffffff;
+                selection-background-color: #3d3d3d;
+            }
+        """)
+        method_section.layout().addWidget(self.method_combo)
+        layout.addWidget(method_section)
 
         # Extracted Message Section
         message_section = self.create_section("Extracted Message")
@@ -161,9 +191,13 @@ class ExtractTab(QWidget):
             QMessageBox.warning(self, "Warning", "Please load an audio file first")
             return
 
-        # Thực hiện trích xuất tin nhắn
-        success, message = self.lsb.extract_message(self.audio_path)
-        
+        # Chọn phương pháp extract dựa trên selection
+        method = self.method_combo.currentText()
+        if "LSB" in method:
+            success, message = self.lsb.extract_message(self.audio_path)
+        else:  # Phase Coding
+            success, message = self.phase.extract_message(self.audio_path)
+            
         if success:
             self.message_text.setText(message)
             QMessageBox.information(self, "Success", "Message extracted successfully!")

@@ -4,11 +4,13 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 from ..widgets.audio_player import AudioPlayer
 from ..steganography.lsb import LSBAudio
+from ..steganography.phase_coding import PhaseCoding
 
 class HideTab(QWidget):
     def __init__(self):
         super().__init__()
         self.lsb = LSBAudio()
+        self.phase = PhaseCoding()
         self.init_ui()
 
     def init_ui(self):
@@ -88,16 +90,14 @@ class HideTab(QWidget):
                 color: #ffffff;
                 border: none;
                 border-radius: 4px;
-                padding: 8px;
+                padding: 6px;
             }
             QComboBox::drop-down {
                 border: none;
-                width: 30px;
+                width: 20px;
             }
             QComboBox::down-arrow {
                 image: url(resources/down-arrow.png);
-                width: 12px;
-                height: 12px;
             }
             QComboBox QAbstractItemView {
                 background-color: #2d2d2d;
@@ -191,8 +191,12 @@ class HideTab(QWidget):
         # Tạo output path
         output_path = self.audio_path.rsplit('.', 1)[0] + '_stego.wav'
         
-        # Thực hiện giấu tin
-        success, msg = self.lsb.hide_message(self.audio_path, message, output_path)
+        # Chọn phương pháp steganography
+        method = self.method_combo.currentText()
+        if "LSB" in method:
+            success, msg = self.lsb.hide_message(self.audio_path, message, output_path)
+        else:  # Phase Coding
+            success, msg = self.phase.hide_message(self.audio_path, message, output_path)
         
         if success:
             QMessageBox.information(self, "Success", 
