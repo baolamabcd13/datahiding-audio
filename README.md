@@ -1,0 +1,201 @@
+# Audio Steganography Application
+
+Ứng dụng giấu tin trong audio sử dụng phương pháp LSB (Least Significant Bit) và Phase Coding.
+
+## Giới thiệu
+
+Audio Steganography là kỹ thuật giấu thông tin bí mật vào trong file âm thanh mà không làm thay đổi đáng kể chất lượng âm thanh. Ứng dụng này cung cấp hai phương pháp steganography:
+
+- LSB (Least Significant Bit): Thay đổi bit ít quan trọng nhất của mỗi sample
+- Phase Coding: Điều chế phase của tín hiệu âm thanh để giấu tin
+
+## Tính năng
+
+### Steganography
+
+- Giấu tin trong file audio sử dụng 2 phương pháp:
+  - LSB (Least Significant Bit)
+  - Phase Coding
+- Hỗ trợ nhiều định dạng audio:
+  - WAV
+  - MP3
+  - FLAC
+  - OGG
+  - M4A
+- Tự động chuyển đổi định dạng về WAV
+
+### Analysis Tools
+
+- Waveform comparison
+- Spectrogram visualization
+- Quality metrics:
+  - SNR (Signal-to-Noise Ratio)
+  - PSNR (Peak Signal-to-Noise Ratio)
+- File info analysis:
+  - Sample rate
+  - Bit depth
+  - Channels
+  - Duration
+  - File size
+
+### Giao diện
+
+- Dark theme hiện đại
+- Audio player tích hợp
+- Trực quan và dễ sử dụng
+- Real-time feedback
+
+## Cài đặt
+
+1. Cài đặt FFmpeg:
+
+```bash
+# Windows (sử dụng Chocolatey)
+choco install ffmpeg
+
+# macOS (sử dụng Homebrew)
+brew install ffmpeg
+
+# Linux (Ubuntu/Debian)
+sudo apt install ffmpeg
+```
+
+2. Clone repository:
+
+```bash
+git clone https://github.com/baolamabcd13/datahiding-audio.git
+cd datahiding-audio
+```
+
+3. Cài đặt dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+## Sử dụng
+
+### 1. Giấu tin (Hide Message)
+
+1. Chạy ứng dụng: `python main.py`
+2. Chuyển đến tab "Hide Message"
+3. Load file audio (hỗ trợ nhiều định dạng)
+4. Nhập tin nhắn cần giấu
+5. Chọn phương pháp (LSB/Phase Coding)
+6. Click 'Hide Message'
+7. Chọn vị trí lưu file stego
+
+### 2. Trích xuất tin (Extract Message)
+
+1. Chuyển đến tab "Extract Message"
+2. Load file audio đã giấu tin
+3. Chọn phương pháp đã dùng
+4. Click 'Extract Message'
+5. Xem tin nhắn được trích xuất
+
+### 3. Phân tích (Analysis)
+
+1. Chuyển đến tab "Analysis"
+2. Load file audio gốc và file stego
+3. Click 'Analyze'
+4. Xem các kết quả phân tích:
+   - So sánh waveform
+   - Spectrogram
+   - SNR & PSNR
+   - Thông tin file
+
+## BÁO CÁO ĐỀ TÀI AUDIO STEGANOGRAPHY
+
+CHƯƠNG 1: TỔNG QUAN
+1.1. Giới thiệu
+Khái niệm steganography
+Tầm quan trọng và ứng dụng
+Các phương pháp steganography phổ biến
+1.2. Audio Steganography
+Đặc điểm của audio steganography
+Ưu điểm so với các phương pháp khác
+Thách thức trong việc giấu tin vào audio
+
+CHƯƠNG 2: CƠ SỞ LÝ THUYẾT
+2.1. Phương pháp LSB (Least Significant Bit)
+2.1.1. Nguyên lý hoạt động
+Cấu trúc file audio WAV
+Cách thức biểu diễn bit trong audio
+Kỹ thuật thay đổi LSB
+2.1.2. Chu trình xử lý
+Quá trình giấu tin (Embedding):
+Đọc file audio
+Chuyển đổi message thành bits
+Thay đổi LSB của mỗi sample
+Lưu file stego
+Quá trình trích xuất (Extraction):
+Đọc file stego
+Trích xuất LSB
+Chuyển đổi bits thành message
+2.2. Phương pháp Phase Coding
+2.2.1. Nguyên lý hoạt động
+Phổ tần số của audio
+Phase và amplitude trong audio
+Kỹ thuật điều chế phase
+2.2.2. Chu trình xử lý
+Quá trình giấu tin:
+Phân đoạn audio
+Chuyển đổi sang miền tần số (FFT)
+Điều chế phase
+Chuyển về miền thời gian (IFFT)
+Quá trình trích xuất:
+Phân đoạn audio
+Chuyển sang miền tần số
+Phân tích phase
+Khôi phục message
+
+CHƯƠNG 3: THIẾT KẾ VÀ TRIỂN KHAI
+3.1. Kiến trúc hệ thống
+Sơ đồ tổng quan
+Các module chính
+Luồng dữ liệu
+3.2. Cài đặt các phương pháp
+3.2.1. LSB Implementation
+Cấu trúc code
+Các hàm chính
+Xử lý lỗi
+3.2.2. Phase Coding Implementation
+Cấu trúc code
+Các hàm chính
+Xử lý lỗi
+3.3. Giao diện người dùng
+Thiết kế UI
+Các tính năng
+Xử lý tương tác
+
+CHƯƠNG 4: ĐÁNH GIÁ VÀ THỰC NGHIỆM
+4.1. Môi trường thử nghiệm
+Hardware/Software
+Dataset test
+Các metric đánh giá
+4.2. Kết quả thực nghiệm
+4.2.1. So sánh hai phương pháp
+Capacity (dung lượng tin)
+Imperceptibility (độ không nhận biết)
+Robustness (độ bền vững)
+Performance (hiệu năng)
+4.2.2. Phân tích chất lượng
+SNR (Signal-to-Noise Ratio)
+PSNR (Peak Signal-to-Noise Ratio)
+Spectrogram analysis
+Subjective evaluation
+4.3. Ưu nhược điểm
+LSB method
+Phase Coding method
+Overall system
+
+CHƯƠNG 5: KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
+5.1. Kết luận
+Tổng kết kết quả đạt được
+Đánh giá hiệu quả
+Những thách thức
+5.2. Hướng phát triển
+Cải thiện thuật toán
+Thêm tính năng bảo mật
+Mở rộng hỗ trợ định dạng
+Tối ưu hóa performance
