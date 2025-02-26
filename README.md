@@ -199,3 +199,96 @@ Cải thiện thuật toán
 Thêm tính năng bảo mật
 Mở rộng hỗ trợ định dạng
 Tối ưu hóa performance
+
+## NGUYÊN LÝ HOẠT ĐỘNG
+
+### 1. LSB (Least Significant Bit)
+
+a. Nguyên lý hoạt động:
+
+- Mỗi sample trong audio được biểu diễn bởi n-bit (thường là 16-bit)
+- Thay đổi bit cuối cùng (LSB) của mỗi sample để giấu thông tin
+- Mỗi sample có thể giấu 1 bit thông tin
+- Thông tin cần giấu được chuyển thành dãy bit nhị phân trước khi nhúng
+
+b. Chức năng:
+
+- Mã hóa tin nhắn thành dãy bit
+- Quét từng sample và thay đổi LSB
+- Lưu trữ metadata (độ dài tin nhắn, checksum)
+- Trích xuất tin nhắn bằng cách đọc LSB
+
+### 2. Phase Coding
+
+a. Nguyên lý hoạt động:
+
+- Chia tín hiệu audio thành các segment
+- Chuyển đổi mỗi segment sang miền tần số (FFT)
+- Điều chế phase của các thành phần tần số để giấu tin
+- Giữ nguyên magnitude để bảo toàn chất lượng âm thanh
+- Chuyển đổi ngược về miền thời gian (IFFT)
+
+b. Chức năng:
+
+- Phân đoạn tín hiệu audio
+- Biến đổi FFT và tính toán phase
+- Điều chế phase để nhúng thông tin
+- Tái tạo tín hiệu với IFFT
+- Đảm bảo tính liên tục của phase giữa các segment
+
+## QUÁ TRÌNH XỬ LÝ
+
+### 1. Quá trình giấu tin (Embedding)
+
+a. LSB Method:
+
+- Đọc file audio và chuyển về định dạng WAV
+- Chuyển đổi message thành dãy bit
+- Lưu trữ độ dài message vào header
+- Quét từng sample và thay đổi LSB
+- Tính toán và lưu checksum
+- Lưu file stego dưới dạng WAV
+
+b. Phase Coding:
+
+- Đọc và chuẩn hóa tín hiệu audio
+- Phân đoạn tín hiệu thành các segment
+- Với mỗi segment:
+  - Thực hiện FFT
+  - Tính toán phase và magnitude
+  - Điều chế phase để nhúng thông tin
+  - Thực hiện IFFT
+- Ghép các segment lại
+- Lưu file stego
+
+### 2. Quá trình trích xuất (Extraction)
+
+a. LSB Method:
+
+- Đọc file stego
+- Trích xuất độ dài message từ header
+- Đọc LSB của từng sample
+- Gom các bit thành byte
+- Kiểm tra checksum
+- Khôi phục message gốc
+
+b. Phase Coding:
+
+- Đọc file stego
+- Phân đoạn tín hiệu
+- Với mỗi segment:
+  - Thực hiện FFT
+  - Trích xuất phase
+  - Giải điều chế để lấy thông tin
+- Gom các bit thành message
+- Kiểm tra tính toàn vẹn
+
+### 3. Phân tích chất lượng
+
+- So sánh waveform trước và sau khi giấu tin
+- Phân tích spectrogram
+- Tính toán các chỉ số:
+  - SNR (Signal-to-Noise Ratio)
+  - PSNR (Peak Signal-to-Noise Ratio)
+  - MSE (Mean Square Error)
+- Đánh giá chủ quan chất lượng âm thanh
