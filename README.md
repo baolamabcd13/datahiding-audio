@@ -67,7 +67,20 @@ git clone https://github.com/baolamabcd13/datahiding-audio.git
 cd datahiding-audio
 ```
 
-3. Cài đặt dependencies:
+3. Cài đặt python3.10:
+
+```bash
+sudo apt install python3.10
+```
+
+4. Cài đặt môi trường ảo cho window:
+
+```bash
+python3.10 -m venv venv
+venv\Scripts\activate
+```
+
+5. Cài đặt dependencies:
 
 ```bash
 pip install -r requirements.txt
